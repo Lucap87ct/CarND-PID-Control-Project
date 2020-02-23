@@ -52,19 +52,25 @@ void PID::UpdateControlParameters(const double cte) {
   bool is_tuning_ongoing{false};
   for (std::size_t i = 0; i < dev_tolerance_.size(); i++) {
     is_tuning_ongoing |= (dev_current_[i] > dev_tolerance_[i]);
-
-    /*std::cout << "Current deviation " << i << " " << dev_current_[i]
-              << std::endl;
-    std::cout << "Current deviation tolerance " << i << " " << dev_tolerance_[i]
-              << std::endl;*/
   }
-  if (is_tuning_ongoing)
+
+  if (is_tuning_ongoing) {
     std::cout << "Tuning ongoing" << std::endl;
-  else
-    std::cout << "Tuning finished" << std::endl;
-
-  /*if (index_tuning < n_steps_tune) {
-
-  } else if (index_validation < n_steps_validation) {
-  }*/
+    if (index_tuning_ == 0) {
+      std::cout << "Tuning init" << std::endl;
+      tot_error_tuning_ = 0.0;
+      Kp_ += dev_current_[0];
+      Ki_ += dev_current_[1];
+      Kd_ += dev_current_[2];
+      index_tuning_++;
+    } else if (index_tuning_ < n_steps_tuning_) {
+      tot_error_tuning_ += cte;
+      std::cout << "Error calculation ongoing" << std::endl;
+      index_tuning_++;
+    } else {
+      std::cout << "Tuning finished" << std::endl;
+      std::cout << "Final total error = " << tot_error_tuning_ << std::endl;
+      index_tuning_ = 0;
+    }
+  }
 }
