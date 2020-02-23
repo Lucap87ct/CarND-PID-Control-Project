@@ -31,6 +31,11 @@ public:
    */
   double TotalError();
 
+  /**
+   * Auto-tune control parameters of the PDI.
+   */
+  void UpdateControlParameters(const double cte);
+
 private:
   /**
    * PID Errors
@@ -46,6 +51,7 @@ private:
   double Kp_;
   double Ki_;
   double Kd_;
+  static constexpr double d_tol_rel_{0.1};
 };
 
 #endif // PID_H
