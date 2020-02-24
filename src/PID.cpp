@@ -41,6 +41,7 @@ void PID::UpdateError(const double cte) {
     std::cout << "Validation finished" << std::endl;
     std::cout << "Total cumulative error = " << total_cumulative_error_
               << std::endl;
+    index_validation_++;
   }
 
   // UpdateControlParameters(cte);
