@@ -1,6 +1,7 @@
 #ifndef PID_H
 #define PID_H
 #include <array>
+#include <limits>
 
 class PID {
 public:
@@ -54,15 +55,18 @@ private:
   static constexpr double dev_rel_tolerance_{
       0.01}; // relative tolerance for twiddle completion
   static constexpr int n_steps_tuning_{
-      10}; // number of steps for twiddle tuning phase
+      25}; // number of steps for twiddle tuning phase
 
   // Twiddle auto-tuning variables
   int index_tuning_{0};
   double tot_error_tuning_{0.0};
+  double best_error_tuning_{std::numeric_limits<double>::max()};
   std::array<double, 3>
       dev_max_; // maximum deviation for twiddle parameter tuning
   std::array<double, 3> dev_tolerance_; // deviation tolerance
   std::array<double, 3> dev_current_;   // deviation tolerance
+  bool twiddle_init_{true};
+  bool twiddle_increase_gain_phase_{true};
 
   /**
    * Auto-tune control parameters of the PDI.

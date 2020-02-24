@@ -1,4 +1,5 @@
 #include "PID.h"
+#include <cmath>
 #include <iostream>
 #include <limits>
 
@@ -55,22 +56,90 @@ void PID::UpdateControlParameters(const double cte) {
   }
 
   if (is_tuning_ongoing) {
-    std::cout << "Tuning ongoing" << std::endl;
     if (index_tuning_ == 0) {
-      std::cout << "Tuning init" << std::endl;
+      if (!twiddle_init_) {
+        Kd_ += dev_current_[2];
+      }
       tot_error_tuning_ = 0.0;
-      Kp_ += dev_current_[0];
-      Ki_ += dev_current_[1];
-      Kd_ += dev_current_[2];
+      std::cout << "Current Kd = " << Kd_ << std::endl;
+      std::cout << "Current Dev Kd = " << dev_current_[2] << std::endl;
       index_tuning_++;
-    } else if (index_tuning_ < n_steps_tuning_) {
-      tot_error_tuning_ += cte;
-      std::cout << "Error calculation ongoing" << std::endl;
+    }
+
+    else if (index_tuning_ < n_steps_tuning_) {
+      tot_error_tuning_ += fabs(cte);
       index_tuning_++;
-    } else {
-      std::cout << "Tuning finished" << std::endl;
+    }
+
+    else {
       std::cout << "Final total error = " << tot_error_tuning_ << std::endl;
+      if (!twiddle_init_) {
+
+        if (tot_error_tuning_ < best_error_tuning_) {
+          std::cout << "Error improved" << std::endl;
+          best_error_tuning_ = tot_error_tuning_;
+          Kd_ += dev_current_[2];
+          for (std::size_t i = 0; i < dev_current_.size(); i++) {
+            dev_current_[i] *= 1.1;
+          }
+        } else {
+          std::cout << "Error did not improve" << std::endl;
+          Kd_ -= 2.0 * dev_current_[2];
+          twiddle_increase_gain_phase_ = false;
+        }
+      }
+
+      else {
+        best_error_tuning_ = tot_error_tuning_;
+        twiddle_init_ = false;
+      }
+
       index_tuning_ = 0;
     }
   }
+
+  /*
+    if (is_tuning_ongoing) {
+      if (index_tuning_ == 0) {
+        if (first_twiddle_tuning_) {
+          // Kp_ += dev_current_[0];
+          Kd_ += dev_current_[2];
+          first_twiddle_tuning_ = false;
+        }
+        tot_error_tuning_ = 0.0;
+        // std::cout << "Current Kp = " << Kp_ << std::endl;
+        // std::cout << "Current Dev Kp = " << dev_current_[0] << std::endl;
+        std::cout << "Current Kd = " << Kd_ << std::endl;
+        std::cout << "Current Dev Kd = " << dev_current_[2] << std::endl;
+        index_tuning_++;
+      } else if (index_tuning_ < n_steps_tuning_) {
+        tot_error_tuning_ += fabs(cte);
+        index_tuning_++;
+      } else {
+        std::cout << "Final total error = " << tot_error_tuning_ << std::endl;
+        if (!twiddle_init_) {
+          if (tot_error_tuning_ < best_error_tuning_) {
+            std::cout << "Error improved" << std::endl;
+            best_error_tuning_ = tot_error_tuning_;
+            // Kp_ += dev_current_[0];
+            Kd_ += dev_current_[2];
+            for (std::size_t i = 0; i < dev_current_.size(); i++) {
+              dev_current_[i] *= 1.1;
+            }
+          } else {
+            std::cout << "Error did not improve" << std::endl;
+            Kp_ -= dev_current_[0];
+            Kd_ -= dev_current_[2];
+            for (std::size_t i = 0; i < dev_current_.size(); i++) {
+              dev_current_[i] *= 0.9;
+            }
+          }
+        } else {
+          best_error_tuning_ = tot_error_tuning_;
+          twiddle_init_ = false;
+          first_twiddle_tuning_ = true;
+        }
+        index_tuning_ = 0;
+      }
+    }*/
 }
