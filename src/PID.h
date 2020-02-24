@@ -56,18 +56,21 @@ private:
       0.01}; // relative tolerance for twiddle completion
   static constexpr int n_steps_tuning_{
       500}; // number of steps for twiddle tuning phase
+  static constexpr int n_steps_validation_{
+      2000}; // number of steps for twiddle validation phase
 
   // Twiddle auto-tuning variables
   int index_tuning_{0};
   double tot_error_tuning_{0.0};
   double best_error_tuning_{std::numeric_limits<double>::max()};
-  std::array<double, 3>
-      dev_max_; // maximum deviation for twiddle parameter tuning
-  std::array<double, 3> dev_tolerance_; // deviation tolerance
-  std::array<double, 3> dev_current_;   // deviation tolerance
+  std::array<double, 3> dev_max_;
+  std::array<double, 3> dev_tolerance_;
+  std::array<double, 3> dev_current_;
   bool twiddle_init_{true};
   bool twiddle_increase_gain_phase_{true};
   bool twiddle_decrease_gain_phase_{false};
+  int index_validation_{0};
+  double total_cumulative_error_{0.0};
 
   /**
    * Auto-tune control parameters of the PDI.

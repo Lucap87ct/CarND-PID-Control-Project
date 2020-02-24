@@ -34,7 +34,16 @@ void PID::UpdateError(const double cte) {
   d_error_ = cte - cte_previous_;
   cte_previous_ = cte;
 
-  UpdateControlParameters(cte);
+  if (index_validation_ < n_steps_validation_) {
+    total_cumulative_error_ += fabs(cte);
+    index_validation_++;
+  } else if (index_validation_ == n_steps_validation_) {
+    std::cout << "Validation finished" << std::endl;
+    std::cout << "Total cumulative error = " << total_cumulative_error_
+              << std::endl;
+  }
+
+  // UpdateControlParameters(cte);
 }
 
 double PID::TotalError() {
@@ -45,7 +54,6 @@ double PID::TotalError() {
   } else if (total_error < -1.0) {
     total_error = -1.0;
   }
-
   return total_error;
 }
 
