@@ -55,7 +55,7 @@ private:
   static constexpr double dev_rel_tolerance_{
       0.01}; // relative tolerance for twiddle completion
   static constexpr int n_steps_tuning_{
-      25}; // number of steps for twiddle tuning phase
+      500}; // number of steps for twiddle tuning phase
 
   // Twiddle auto-tuning variables
   int index_tuning_{0};
@@ -67,6 +67,7 @@ private:
   std::array<double, 3> dev_current_;   // deviation tolerance
   bool twiddle_init_{true};
   bool twiddle_increase_gain_phase_{true};
+  bool twiddle_decrease_gain_phase_{false};
 
   /**
    * Auto-tune control parameters of the PDI.
