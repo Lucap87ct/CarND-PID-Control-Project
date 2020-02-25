@@ -24,9 +24,9 @@ Parameter tuning
 It was observed that the vehicle is very sensitive to small variations, so P, I and D components were tuned manually in order to achieve staying inside the track.
 I also implemented and played with the twiddle algorithm in order to optimize the parameter, but no appreciatable results were obtained. Therefore the manually tuned parameters were kept.
 Final values are:
-* P = 0.1
-* I = 0.01
-* D = 2.5
+* P = 0.075
+* I = 0.005
+* D = 1.5
 
 Code guidelines
 ---
